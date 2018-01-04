@@ -40,11 +40,16 @@ namespace ArdMeteo
         System.Windows.Threading.DispatcherTimer timer;
         int s;
         //
+        struct logStruct { string date, val;  }
 
+        //Коллекции для графиков
+        ObservableCollection<KeyValuePair<string, double>> dataCurrTemp     = new ObservableCollection<KeyValuePair<string, double>>();    //коллекция текущей температруы
+        ObservableCollection<KeyValuePair<string, double>> dataCurrPress    = new ObservableCollection<KeyValuePair<string, double>>();    //коллекция текущего давления
+        ObservableCollection<KeyValuePair<string, double>> dataTemp         = new ObservableCollection<KeyValuePair<string, double>>();    //коллекция температуры
+        ObservableCollection<KeyValuePair<string, double>> dataPress        = new ObservableCollection<KeyValuePair<string, double>>();    //коллекция давления
+
+        ObservableCollection<KeyValuePair<string, double>> dataTest         = new ObservableCollection<KeyValuePair<string, double>>();    //коллекция тестовая
         //********************************************
-        ObservableCollection<KeyValuePair<string, double>> Power = new ObservableCollection<KeyValuePair<string, double>>();
-
-
         public MainWindow()
         {
             //serialPort = new SerialPort();
@@ -56,29 +61,25 @@ namespace ArdMeteo
             dataSample = new Chart.SampleModel();
 
             chartCurrPress.DataContext = dataSample;
-            int fd = 4;
-
-
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 1);  // per 5 seconds, you could change it
-            timer.Tick += new EventHandler(timer_Tick);
-            timer.IsEnabled = true;
+            int fd = 0;
 
             showColumnChart();
+
+            cmbPeriod.SelectedIndex = getItemIndex(cmbPeriod.Items, "За сутки");
+
         }
 
+        
 
-        double i = 5;
-        Random random = new Random(DateTime.Now.Millisecond);
-        void timer_Tick(object sender, EventArgs e)
-        {
-            //Power.Add(new KeyValuePair<double, double>(i, random.NextDouble()));
-            i += 5;
-        }
 
-        private void showColumnChart()
+        private void showColumnChart()  //метод для  подключения коллекций к графикам 
         {
-            chartTest.DataContext = Power;
+            chartCurrTemp.DataContext   = dataCurrTemp;     //текущая температура
+            chartCurrPress.DataContext  = dataCurrPress;    //текущее давление
+            chartTemp.DataContext       = dataTemp;         //температура
+            chartPress.DataContext      = dataPress;        //давление
+
+            chartTest.DataContext       = dataTest;         //тестовое
         }
 
         //*************************************************
@@ -127,18 +128,9 @@ namespace ArdMeteo
             tempBox.Text = temp;
             string path = "Лог температуры.txt";            //наименование файла с логами
             string date = DateTime.Now.ToString();
-            using (StreamWriter sw = File.AppendText(path))
-            {
-                sw.WriteLine(temp);
-                sw.WriteLine(date);
-            }
 
-            temp = temp.Trim(new char[] { '\t' });
-            temp = temp.Replace(".", ",");
-            date = date.Substring(11);
-            double tempD = Double.Parse(temp);
-
-            Power.Add(new KeyValuePair<string, double>(date, tempD));
+            recLog(path, date, temp);
+            recordChartCollection(dataCurrTemp, date, temp);
 
         }
 
@@ -147,11 +139,10 @@ namespace ArdMeteo
             pressBox.Text = pressure;                       //отображение значения
             string path = "Лог атмосферного давления.txt";   //Наименование файла с логами
             string date = DateTime.Now.ToString();          //получаем текущую дату
-            using (StreamWriter sw = File.AppendText(path)) //директива для записи в файл
-            {
-                sw.WriteLine(pressure);     //запись давления
-                sw.WriteLine(date);         //запись времени
-            }
+
+            recLog(path, date, pressure);
+            recordChartCollection(dataCurrPress, date, pressure);
+
         }
 
 
@@ -219,12 +210,122 @@ namespace ArdMeteo
             }
         }
 
+        public class Test
+        {
+            //public string Image { get; set; }
+            public string Text { get; set; }
+        }
+
         private void button5_Click(object sender, RoutedEventArgs e)
         {
+            DateTime dateFrom = DateTime.MinValue;  //дата С
+            DateTime dateTo = DateTime.Now;         //дата ПО
+            DateTime dateLoop;                      //дата для цикла
+            var test = cmbPeriod.Text;
+            var test2 = cmbPeriod.SelectedItem;
+
+            switch (cmbPeriod.Text)
+            {
+                case "За сутки":
+                    dateFrom = DateTime.Now.AddDays(-1);
+                    break;
+                case "За неделю":
+                    dateFrom = DateTime.Now.AddDays(-7);
+                    break;
+                case "За месяц":
+                    dateFrom = DateTime.Now.AddDays(-31);
+                    break;
+                case "За пол года":
+                    dateFrom = DateTime.Now.AddDays(-183);
+                    break;
+                case "За год":
+                    dateFrom = DateTime.Now.AddDays(-366);
+                    break;
+            }
+
+            if (dataTemp.Count > 0)
+                dataTemp.Clear();
+
+            StreamReader streamReader = new StreamReader("Лог температуры.txt");
+            while (!streamReader.EndOfStream)
+            {
+                string Y = streamReader.ReadLine();
+                string X = streamReader.ReadLine();
+
+                //date = X.Remove(10);
+                dateLoop = DateTime.Parse(X);
+
+                if (dateLoop >= dateFrom && dateLoop <= dateTo)
+                {
+                    recordChartCollection(dataTemp, X, Y);
+                }
+            }
+            streamReader.Close();
+
+            cmbPeriod.SelectedIndex = cmbPeriod.Items.IndexOf("За сутки");
 
         }
         //********************************************************************************************
         //ДИАГРАММЫ
+
+        /// <summary>
+        /// Запись в коллекции связанные с графиками
+        /// </summary>
+        /// <param name="collection">Коллекция</param>
+        /// <param name="date">Дата</param>
+        /// <param name="value">Значение</param>
+        private void recordChartCollection(ObservableCollection<KeyValuePair<string, double>> collection, string date, string value)
+        {
+
+
+            value = value.Trim(new char[] { '\t' });
+            value = value.Replace(".", ",");
+
+            double val = Double.Parse(value);
+            date = date.Substring(11);
+
+            collection.Add(new KeyValuePair<string, double>(date, val));
+        }
+
+        /// <summary>
+        /// Построчная запись в лог
+        /// </summary>
+        /// <param name="path">Наименование лога</param>
+        /// <param name="date">дата</param>
+        /// <param name="val">значение</param>
+        private void recLog(string path, string date, string val)
+        {
+            using (StreamWriter sw = File.AppendText(path)) //директива для записи в файл
+            {
+                sw.WriteLine(val);     //запись значения
+                sw.WriteLine(date);    //запись времени
+            }
+        }
+
+        //********************************************************************************
+        //Вспомогательные функции
+
+        /// <summary>
+        /// Поиск элемента в ItemCollection
+        /// </summary>
+        /// <param name="item">ItemCollection</param>
+        /// <param name="val">Искомое значение</param>
+        /// <returns></returns>
+        private int getItemIndex(ItemCollection item, string val)   //костылятина.
+        {
+            string name;
+
+            for (int i = 0; 0 < item.Count; i++)
+            {
+                name = item[i].ToString();  //получаем значение
+                name = name.Substring(38);  //вырезаем  первую ненужную часть
+                if (val.Equals(name))
+                    return i;
+            }
+            return -1;
+        }
+
+
         //private void startChart(Chart chart, string filePath)  //графики на второй вкладке
         //{
 
