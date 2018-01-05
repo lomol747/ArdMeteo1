@@ -7,6 +7,10 @@
         xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit" x:Class="ArdMeteo.MainWindow"
         mc:Ignorable="d"
         Title="ArdMeteo" Height="580.667" Width="798" Loaded="Window_Loaded_1">
+    <Window.DataContext>
+        <local:MainVM/>
+        <!-- Создаем новый VM и соединяем его со View -->
+    </Window.DataContext>
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="Black" Offset="0.939"/>
@@ -29,7 +33,7 @@
                     <ColumnDefinition Width="373*"/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="button5" Content="Button" HorizontalAlignment="Left" Margin="48,10,0,0" VerticalAlignment="Top" Width="75" Height="20" Click="button5_Click"/>
-                <Button x:Name="button6" Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Height="20"/>
+                <Button x:Name="button6" Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Height="20" Click="button6_Click"/>
                 <Label x:Name="label" Content="Пинг:" Margin="270,0,68,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Foreground="#FFECECEC" Grid.Column="2" Height="29"/>
 
                 <chartingToolkit:Chart HorizontalAlignment="Left" Margin="155,16,0,0" Title="Chart Title" VerticalAlignment="Top">
@@ -129,17 +133,18 @@
                             </chartingToolkit:Chart.DataContext>
                             <chartingToolkit:ColumnSeries DependentValuePath="X" IndependentValuePath="Y" ItemsSource="{Binding}" Title=""/>
                         </chartingToolkit:Chart>
-                        <ComboBox x:Name="cmbPeriod" HorizontalAlignment="Left" Margin="634,10,0,0" VerticalAlignment="Top" Width="120">
-                            <ComboBoxItem Content="За сутки"/>
-                            <ComboBoxItem Content="За неделю"/>
-                            <ComboBoxItem Cursor="" Content="За месяц"/>
-                            <ComboBoxItem Content="За пол года"/>
-                            <ComboBoxItem Content="За год"/>
-                            <ComboBoxItem Content="За всё время"/>
+                        <ComboBox x:Name="cmbPeriod" HorizontalAlignment="Left" Margin="634,10,0,0" VerticalAlignment="Top" Width="120" >
+                            <ComboBoxItem Content="За сутки" Selected="ComboBoxItem_Selected" />
+                            <ComboBoxItem Content="За неделю" Selected="ComboBoxItem_Selected"/>
+                            <ComboBoxItem Content="За месяц" Selected="ComboBoxItem_Selected"/>
+                            <ComboBoxItem Content="За пол года" Selected="ComboBoxItem_Selected"/>
+                            <ComboBoxItem Content="За год" Selected="ComboBoxItem_Selected"/>
+                            <ComboBoxItem Content="За всё время" Selected="ComboBoxItem_Selected"/>
                         </ComboBox>
+                        <Label x:Name="lblPointTemp" Content="" Margin="0,0,10,5" FontSize="9" HorizontalAlignment="Right" Width="33" Height="26" VerticalAlignment="Bottom"/>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Тестовая вкладка" Margin="-2,-2,-2,0">
+                <TabItem Header="Тестовая вкладка" Margin="0,0,0,0">
                     <Grid Background="#FFE5E5E5">
                         <!-- Тестовый график -->
                         <chartingToolkit:Chart x:Name="chartTest" HorizontalAlignment="Stretch" Title="Chart Title" VerticalAlignment="Top" Height="334">
@@ -162,9 +167,21 @@
                             </chartingToolkit:Chart.LegendStyle>
                         </chartingToolkit:Chart>
                     </Grid>
-
                 </TabItem>
+                <TabItem Header="Тестовая вкладка 2" Margin="0,0,0,0">
+                    <Grid Background="#FFE5E5E5">
+                        <Button x:Name="btnPlace" Content="Суммировать" HorizontalAlignment="Left" Margin="107,97,0,0" VerticalAlignment="Top" Width="99"/>
+                        <TextBox x:Name="tb1" HorizontalAlignment="Left" Height="23" Margin="83,56,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="59"
+                                 Text="{Binding Number1, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox x:Name="tb2" HorizontalAlignment="Left" Height="23" Margin="187,56,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"
+                                 Text="{Binding Number2, UpdateSourceTrigger=PropertyChanged}" IsEnabled="true"/>
+                        <TextBox x:Name="tbSum" HorizontalAlignment="Left" Height="23" Margin="299,56,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="55"
+                                 Text="{Binding Number3, Mode=OneWay}" IsReadOnly="true"/>
+                        <Label x:Name="label4" Content="{Binding Number2}" HorizontalAlignment="Left" Margin="491,42,0,0" VerticalAlignment="Top"/>
+                        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="507,97,0,0" TextWrapping="Wrap" Text="{Binding TextTest2}" VerticalAlignment="Top" Width="120"/>
 
+                    </Grid>
+                </TabItem>
             </TabControl>
             <Label x:Name="label1" Content="Температура " HorizontalAlignment="Left" Margin="22,0,0,0" Grid.Row="2" VerticalAlignment="Top" FontWeight="Bold" Height="26" Width="89"/>
             <Label x:Name="label2" Content="Атмосферное давление (мм. рт. ст)" HorizontalAlignment="Left" Margin="175,32,0,0" Grid.Row="1" VerticalAlignment="Top" Width="225" FontWeight="Bold" Height="26" Grid.RowSpan="2"/>

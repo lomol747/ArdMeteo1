@@ -216,55 +216,28 @@ namespace ArdMeteo
             public string Text { get; set; }
         }
 
+
+        //***************************************************************************
+        //Обработка нажатий кнопок
+        //***************************************************************************
+
         private void button5_Click(object sender, RoutedEventArgs e)
         {
-            DateTime dateFrom = DateTime.MinValue;  //дата С
-            DateTime dateTo = DateTime.Now;         //дата ПО
-            DateTime dateLoop;                      //дата для цикла
-            var test = cmbPeriod.Text;
-            var test2 = cmbPeriod.SelectedItem;
 
-            switch (cmbPeriod.Text)
-            {
-                case "За сутки":
-                    dateFrom = DateTime.Now.AddDays(-1);
-                    break;
-                case "За неделю":
-                    dateFrom = DateTime.Now.AddDays(-7);
-                    break;
-                case "За месяц":
-                    dateFrom = DateTime.Now.AddDays(-31);
-                    break;
-                case "За пол года":
-                    dateFrom = DateTime.Now.AddDays(-183);
-                    break;
-                case "За год":
-                    dateFrom = DateTime.Now.AddDays(-366);
-                    break;
-            }
-
-            if (dataTemp.Count > 0)
-                dataTemp.Clear();
-
-            StreamReader streamReader = new StreamReader("Лог температуры.txt");
-            while (!streamReader.EndOfStream)
-            {
-                string Y = streamReader.ReadLine();
-                string X = streamReader.ReadLine();
-
-                //date = X.Remove(10);
-                dateLoop = DateTime.Parse(X);
-
-                if (dateLoop >= dateFrom && dateLoop <= dateTo)
-                {
-                    recordChartCollection(dataTemp, X, Y);
-                }
-            }
-            streamReader.Close();
-
-            cmbPeriod.SelectedIndex = cmbPeriod.Items.IndexOf("За сутки");
+            //cmbPeriod.SelectedIndex = cmbPeriod.Items.IndexOf("За сутки");
+            readFromLog("Лог температуры.txt", dataTemp);
 
         }
+
+
+
+        private void button6_Click(object sender, RoutedEventArgs e)
+        {
+            removeChartCollection(dataTemp);
+        }
+
+
+
         //********************************************************************************************
         //ДИАГРАММЫ
 
@@ -302,6 +275,71 @@ namespace ArdMeteo
             }
         }
 
+        /// <summary>
+        /// Очищение коллекции
+        /// </summary>
+        /// <param name="collection">коллекция</param>
+        private void removeChartCollection(ObservableCollection<KeyValuePair<string, double>> collection)
+        {
+            collection.Clear(); //двойной, иначе визуально удаляется не полностью, хотя коллекция пуста
+            collection.Clear();
+        }
+
+
+        /// <summary>
+        /// Чтение из файла и запись в график
+        /// </summary>
+        /// <param name="path">Наименование файла</param>
+        /// <param name="collection">Коллекция</param>
+        private void readFromLog(string path, ObservableCollection<KeyValuePair<string, double>> collection)
+        {
+            DateTime dateFrom = DateTime.MinValue;  //дата С
+            DateTime dateTo = DateTime.Now;         //дата ПО
+            DateTime dateLoop;                      //дата для цикла
+            int count = 0;                          //счётчик точек. Потом убрать
+
+            switch (cmbPeriod.Text)
+            {
+                case "За сутки":
+                    dateFrom = DateTime.Now.AddDays(-1);
+                    break;
+                case "За неделю":
+                    dateFrom = DateTime.Now.AddDays(-7);
+                    break;
+                case "За месяц":
+                    dateFrom = DateTime.Now.AddDays(-31);
+                    break;
+                case "За пол года":
+                    dateFrom = DateTime.Now.AddDays(-183);
+                    break;
+                case "За год":
+                    dateFrom = DateTime.Now.AddDays(-366);
+                    break;
+            }
+
+            if (dataTemp.Count > 0)
+                dataTemp.Clear();
+
+            StreamReader streamReader = new StreamReader(path);
+            while (!streamReader.EndOfStream)
+            {
+                string Y = streamReader.ReadLine();
+                string X = streamReader.ReadLine();
+
+                //date = X.Remove(10);
+                dateLoop = DateTime.Parse(X);
+
+                if (dateLoop >= dateFrom && dateLoop <= dateTo)
+                {
+                    recordChartCollection(collection, X, Y);
+                    count++;                                //счётчик точек. Потом убрать
+                }
+            }
+            streamReader.Close();
+
+            lblPointTemp.Content = count.ToString();        //счётчик точек. Потом убрать
+        }
+
         //********************************************************************************
         //Вспомогательные функции
 
@@ -324,6 +362,30 @@ namespace ArdMeteo
             }
             return -1;
         }
+
+        private void cmbPeriod_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string test = (sender as ComboBox).Text;
+            object send = sender;
+            
+
+            //removeChartCollection(dataTemp);
+            //readFromLog("Лог температуры.txt", dataTemp);
+            
+        }
+
+        private void ComboBoxItem_Selected(object sender, RoutedEventArgs e)
+        {
+            removeChartCollection(dataTemp);
+            readFromLog("Лог температуры.txt", dataTemp);
+        }
+
+
+
+
+
+
+
 
 
         //private void startChart(Chart chart, string filePath)  //графики на второй вкладке

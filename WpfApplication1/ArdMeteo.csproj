@@ -115,6 +115,8 @@
     </ApplicationDefinition>
     <Compile Include="Chart\DataItem.cs" />
     <Compile Include="Chart\SampleModel.cs" />
+    <Compile Include="MainVM.cs" />
+    <Compile Include="Model.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
