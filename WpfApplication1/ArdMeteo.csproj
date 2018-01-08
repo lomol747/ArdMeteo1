@@ -116,8 +116,10 @@
     <Compile Include="Chart\DataItem.cs" />
     <Compile Include="Chart\SampleModel.cs" />
     <Compile Include="MainVM.cs" />
-    <Compile Include="Model.cs" />
+    <Compile Include="ModelMath.cs" />
+    <Compile Include="Model\SerialPortModel.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="VM\MainWindowVM.cs" />
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
@@ -173,6 +175,7 @@
   <ItemGroup>
     <Resource Include="Weather-Fog-Day-icon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

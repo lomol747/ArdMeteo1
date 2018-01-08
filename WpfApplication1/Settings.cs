@@ -1,7 +1,7 @@
 ﻿
 namespace ArdMeteo
 {
-    class Settings
+    public class Settings
     {
 
         private string portName = "COM13";  //наименование порта

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArdMeteo
 {
-    public class Model
+    public class ModelMath
     {
         private double temp { get; set; }
         private double press { get; set; }

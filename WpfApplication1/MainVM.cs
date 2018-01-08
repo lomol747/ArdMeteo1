@@ -68,7 +68,7 @@ namespace ArdMeteo
         }
 
         //свойство только для чтения, оно считывается View каждый раз, когда обновляется Number1 или Number2
-        public double Number3 => Model.GetSumOf(Number1, Number2);
+        public double Number3 => ModelMath.GetSumOf(Number1, Number2);
 
         public string TextTest31 { get => _TextTest3; set => _TextTest3 = value; }
     }
