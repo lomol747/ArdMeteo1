@@ -7,6 +7,7 @@ using System.IO.Ports;
 using System.ComponentModel;
 using System.Windows.Threading;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace ArdMeteo
 {
@@ -16,21 +17,26 @@ namespace ArdMeteo
         //*************************************
         //События
         public delegate void delegeteContainer();
-        public event delegeteContainer eventTemp;
-        public event delegeteContainer eventPress;
+        public event delegeteContainer eventTemp;   //температура
+        public event delegeteContainer eventPress;  //давление
+        public event delegeteContainer eventHum;    //влажность
+        public event delegeteContainer eventGas;    //газ
         //*************************************
-        Dispatcher disp;
+        Dispatcher disp;    //дистпетчер потоков. Для обробатки из ком-порта
 
         private SerialPort serialPort = new SerialPort();   //инициализация ком порта
         public Settings settings = new Settings();         //инициализация настроек
 
-        public string _temp;
-
+        public string _temp;    //температура
         public string _press;   //давление
+        public string _hum;     //влажность
+        public string _gas;     //газ
 
         //делегеты, используемые при получении из ком порта
         private delegate void LineReceivedEventTemp(string temp);   
         private delegate void LineReceivedEventPress(string press);
+        private delegate void LineReceivedEventHum(string hum);
+        private delegate void LineReceivedEventGas(string gas);
 
         public SerialPortModel()
         {
@@ -59,6 +65,9 @@ namespace ArdMeteo
 
                 serialPort.DataReceived += SerialPort1_DataReceivedTemp;
                 serialPort.DataReceived += SerialPort1_DataReceivedPress;
+                serialPort.DataReceived += SerialPort1_DataReceivedHum;
+                serialPort.DataReceived += SerialPort1_DataReceivedGas;
+                
 
                 //lblPort.Foreground = Brushes.Green;    //текущий ком порт внизу окна
 
@@ -72,6 +81,8 @@ namespace ArdMeteo
                 //MessageBox.Show("Отсутствует подключение к устройству", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);  //исключение для ошибки
             }
         }
+
+        
 
         private string setValue(string val)
         {
@@ -119,6 +130,33 @@ namespace ArdMeteo
             }
         }
 
+        private void SerialPort1_DataReceivedHum(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                _hum = serialPort.ReadLine();
+                eventHum();
+                
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void SerialPort1_DataReceivedGas(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                _gas = serialPort.ReadLine();
+                eventGas();
+            }
+            catch
+            {
+
+            }
+        }
+
         //*********************************
         //Запись в файл
         private void LineReceivedTemp(string temp)
@@ -145,6 +183,22 @@ namespace ArdMeteo
             recLog(path, date, pressure);
             //recordChartCollection(dataCurrPress, date, pressure);
         }
+
+        private void LineReceivedHum(string hum)
+        {
+            string path = "Лог влажности.txt";            //наименование файла с логами
+            string date = DateTime.Now.ToString();
+
+            recLog(path, date, hum);
+        }
+
+        private void LineReceivedGas(string gas)
+        {
+            string path = "Лог газа.txt";            //наименование файла с логами
+            string date = DateTime.Now.ToString();
+
+            recLog(path, date, gas);
+        }
         //***********************************
 
         /// Построчная запись в лог
@@ -156,6 +210,30 @@ namespace ArdMeteo
                 sw.WriteLine(date);    //запись времени
             }
         }
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }

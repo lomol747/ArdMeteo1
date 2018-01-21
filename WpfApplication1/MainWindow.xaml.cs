@@ -19,6 +19,7 @@ using System.IO;
 using System.Windows.Controls.DataVisualization.Charting;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
+using OxyPlot;
 
 namespace ArdMeteo
 {
@@ -52,6 +53,7 @@ namespace ArdMeteo
 
         //int tt = 0;
 
+        int q = 0;
         //********************************************
         public MainWindow()
         {
@@ -66,7 +68,7 @@ namespace ArdMeteo
             //chartCurrPress.DataContext = dataSample;
             
             //showColumnChart();
-            double test = chartCurrTemp.Width;
+            //double test = chartCurrTemp.Width;
             //cmbPeriod.SelectedIndex = getItemIndex(cmbPeriod.Items, "За сутки");
             init();
             chartTest.DataContext = dataTest;         //тестовое
@@ -75,13 +77,17 @@ namespace ArdMeteo
             string test5 = Dispatcher.CurrentDispatcher.ToString();
             string test6 = this.Dispatcher.ToString();
             int fd = 0;
-        }
 
+            //timeStart();
+
+        }
 
 
 
         public void init()
         {
+
+
             dataTest.Add(new KeyValuePair<string, double>("Dog", 30));
             dataTest.Add(new KeyValuePair<string, double>("Cat", 25));
             dataTest.Add(new KeyValuePair<string, double>("Rat", 5));
@@ -207,20 +213,40 @@ namespace ArdMeteo
 
         //    //******************************************************************************************
         //Теймер
-        private void Window_Loaded_1(object sender, RoutedEventArgs e)
-        {
-            timer = new System.Windows.Threading.DispatcherTimer();
+        //private void Window_Loaded_1(object sender, RoutedEventArgs e)
+        //{
+        //    timer = new System.Windows.Threading.DispatcherTimer();
 
-            timer.Tick += new EventHandler(timerTick2);     //вызов события
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 1);         //Установка интервала
-            double test = chartCurrTemp.Width;
-            timer.Start();                                  //старт таймера
-        }
+        //    timer.Tick += new EventHandler(timerTick2);     //вызов события
+        //    timer.Interval = new TimeSpan(0, 0, 0, 0, 1);         //Установка интервала
+        //    double test = chartCurrTemp.Width;
+        //    timer.Start();                                  //старт таймера
+        //    q++;
+        //    lblTestCount.Content = q.ToString();
+        //}
 
-        private void timerTick2(object sender, EventArgs e)
-        {
-            double test = chartCurrTemp.Width;
-        }
+        //private void timeStart()
+        //{
+        //    timer = new System.Windows.Threading.DispatcherTimer();
+
+        //    timer.Tick += new EventHandler(timerTick2);     //вызов события
+        //    timer.Interval = new TimeSpan(0, 0, 0, 0, 25);         //Установка интервала
+        //    double test = chartCurrTemp.Width;
+        //    timer.Start();                                  //старт таймера
+        //}
+
+        //private void timerTick2(object sender, EventArgs e)
+        //{
+        //    double test = chartCurrTemp.Width;
+        //    q++;
+        //    if (btnTest != null)
+        //    {
+        //        RotateTransform rotate = new RotateTransform(q);
+        //        lblTestCount.Content = q.ToString();
+        //        btnTest.RenderTransform = rotate;
+        //        //(btnTest.RenderTransform as RotateTransform).Angle = q;
+        //    }
+        //}
 
         //    private void timerTick2(object sender, EventArgs e) //вызываемая функция таймера
         //    {

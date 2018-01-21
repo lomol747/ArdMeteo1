@@ -4,12 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ee="http://schemas.microsoft.com/expression/2010/effects"
     xmlns:local="clr-namespace:ArdMeteo"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="http://oxyplot.org/wpf"
     Title="ArdMeteo"
     Width="798"
     Height="580.667"
     mc:Ignorable="d">
+
     <Window.DataContext>
         <local:MainWindowVM />
         <!--  Создаем новый VM и соединяем его со View  -->
@@ -22,19 +25,20 @@
     </Window.Background>
     <Grid Margin="0,0,0,0" VerticalAlignment="Stretch">
         <Grid
-            Margin="10"
+            Margin="1"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0*" />
-                <RowDefinition Height="35*" />
-                <RowDefinition Height="38*" />
-                <RowDefinition Height="395*" />
-                <RowDefinition Height="62*" />
+                <RowDefinition Height="37*" />
+                <RowDefinition Height="39*" />
+                <RowDefinition Height="439*" />
+                <RowDefinition Height="33*" />
             </Grid.RowDefinitions>
             <Grid
                 Grid.Row="4"
                 Height="34"
+                Margin="0,0,0,-1"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top">
                 <Grid.ColumnDefinitions>
@@ -44,6 +48,7 @@
                 </Grid.ColumnDefinitions>
                 <Button
                     x:Name="button5"
+                    Command="{Binding  AddCommand}"
                     Width="75"
                     Height="20"
                     Margin="48,10,0,0"
@@ -145,54 +150,32 @@
                             <RowDefinition Height="50*" />
                             <RowDefinition Height="50*" />
                         </Grid.RowDefinitions>
-                        <chartingToolkit:Chart
-                            x:Name="chartCurrTemp"
-                            Title="Температура"
-                            Margin="0,0,0,24"
-                            HorizontalAlignment="Stretch"
-                            RenderTransformOrigin="0.5,0.5">
-                            <chartingToolkit:LineSeries
-                                Title=""
-                                DataContext="{Binding}"
-                                DependentValueBinding="{Binding Path=Value}"
-                                IndependentValueBinding="{Binding Path=Key}"
-                                IsSelectionEnabled="True"
-                                ItemsSource="{Binding Path=dataCurrTemp}" />
-                            <!--  Увеличение области построения графика  -->
-                            <chartingToolkit:Chart.TitleStyle>
-                                <Style />
-                            </chartingToolkit:Chart.TitleStyle>
-                            <!--  Увеличение области потсроения графика  -->
-                            <chartingToolkit:Chart.LegendStyle>
-                                <Style />
-                            </chartingToolkit:Chart.LegendStyle>
-
-                        </chartingToolkit:Chart>
-                        <chartingToolkit:Chart
-                            x:Name="chartCurrPress"
-                            Title="Атмосферное давление"
+                        <oxy:Plot Title="Температура" Margin="1,1,1,1">
+                            <oxy:Plot.Axes>
+                                <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm:ss" />
+                            </oxy:Plot.Axes>
+                            <oxy:Plot.Series>
+                                <oxy:LineSeries
+                                    DataFieldX="Date"
+                                    DataFieldY="Value"
+                                    ItemsSource="{Binding dataCurrTemp}" />
+                            </oxy:Plot.Series>
+                        </oxy:Plot>
+                        <oxy:Plot
+                            Title="Давление"
                             Grid.Row="1"
-                            Margin="0,0,0,4"
-                            HorizontalAlignment="Stretch"
-                            Background="YellowGreen"
-                            Foreground="DarkBlue">
-                            <chartingToolkit:LineSeries
-                                Title=""
-                                DependentValueBinding="{Binding Path=Value}"
-                                IndependentValueBinding="{Binding Path=Key}"
-                                IsSelectionEnabled="True"
-                                ItemsSource="{Binding}" />
-
-                            <!--  Увеличение области построения графика  -->
-                            <chartingToolkit:Chart.TitleStyle>
-                                <Style />
-                            </chartingToolkit:Chart.TitleStyle>
-                            <!--  Увеличение области потсроения графика  -->
-                            <chartingToolkit:Chart.LegendStyle>
-                                <Style />
-                            </chartingToolkit:Chart.LegendStyle>
-
-                        </chartingToolkit:Chart>
+                            Margin="1,1"
+                            Background="AliceBlue">
+                            <oxy:Plot.Axes>
+                                <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm:ss" />
+                            </oxy:Plot.Axes>
+                            <oxy:Plot.Series>
+                                <oxy:LineSeries
+                                    DataFieldX="Date"
+                                    DataFieldY="Value"
+                                    ItemsSource="{Binding dataCurrPress}" />
+                            </oxy:Plot.Series>
+                        </oxy:Plot>
                     </Grid>
                 </TabItem>
                 <TabItem Header="За период">
@@ -201,26 +184,17 @@
                             <RowDefinition Height="50*" />
                             <RowDefinition Height="50*" />
                         </Grid.RowDefinitions>
-                        <chartingToolkit:Chart
-                            x:Name="chartTemp"
-                            Title="Температура"
-                            Margin="0,0,0,5"
-                            HorizontalAlignment="Stretch">
-                            <chartingToolkit:LineSeries
-                                Title=""
-                                DependentValueBinding="{Binding Path=Value}"
-                                IndependentValueBinding="{Binding Path=Key}"
-                                IsSelectionEnabled="True"
-                                ItemsSource="{Binding}" />
-                            <!--  Увеличение области построения графика  -->
-                            <chartingToolkit:Chart.TitleStyle>
-                                <Style />
-                            </chartingToolkit:Chart.TitleStyle>
-                            <!--  Увеличение области потсроения графика  -->
-                            <chartingToolkit:Chart.LegendStyle>
-                                <Style />
-                            </chartingToolkit:Chart.LegendStyle>
-                        </chartingToolkit:Chart>
+                        <oxy:Plot Title="Температура" Margin="1">
+                            <oxy:Plot.Axes>
+                                <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm:ss" />
+                            </oxy:Plot.Axes>
+                            <oxy:Plot.Series>
+                                <oxy:LineSeries
+                                    DataFieldX="Date"
+                                    DataFieldY="Value"
+                                    ItemsSource="{Binding dataTemp}" />
+                            </oxy:Plot.Series>
+                        </oxy:Plot>
                         <chartingToolkit:Chart
                             x:Name="chartPress"
                             Title="Атмосферное давление"
@@ -272,13 +246,6 @@
                             <chartingToolkit:Chart.Axes>
                                 <chartingToolkit:DateTimeAxis SeriesHost="{x:Null}" />
                             </chartingToolkit:Chart.Axes>
-                            <!--  Тестовый график  -->
-                            <chartingToolkit:LineSeries
-                                Title=""
-                                DependentValueBinding="{Binding Path=Value}"
-                                IndependentValueBinding="{Binding Path=Key}"
-                                IsSelectionEnabled="True"
-                                ItemsSource="{Binding}" />
                             <!--  Увеличение области потсроения графика  -->
                             <chartingToolkit:Chart.TitleStyle>
                                 <Style />
@@ -287,7 +254,31 @@
                             <chartingToolkit:Chart.LegendStyle>
                                 <Style />
                             </chartingToolkit:Chart.LegendStyle>
+                            <!--  Тестовый график  -->
+                            <chartingToolkit:LineSeries
+                                Title=""
+                                DependentValueBinding="{Binding Value}"
+                                IndependentValueBinding="{Binding Key}"
+                                IsSelectionEnabled="True"
+                                ItemsSource="{Binding}" />
                         </chartingToolkit:Chart>
+                    </Grid>
+                </TabItem>
+                <TabItem Margin="0,0,0,0" Header="OxyPlot">
+                    <Grid Background="#FFE5E5E5">
+                        <!--  Тестовый график 2 <oxy:PlotView Model="{Binding  dataTest}"/> DataFieldX="{Binding Key}" DataFieldY="{Binding Value}-->
+                        <oxy:Plot Title="Тестовый OxyPlot" Height="336">
+                            <oxy:Plot.Axes>
+                                <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm:ss" />
+                            </oxy:Plot.Axes>
+                            <oxy:Plot.Series>
+                                <oxy:LineSeries
+                                    DataFieldX="Date"
+                                    DataFieldY="Value"
+                                    ItemsSource="{Binding dataCurrTemp}" />
+                            </oxy:Plot.Series>
+
+                        </oxy:Plot>
                     </Grid>
                 </TabItem>
                 <TabItem Margin="0,0,0,0" Header="Тестовая вкладка 2">
@@ -298,7 +289,11 @@
                             Margin="107,97,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
-                            Content="Суммировать" />
+                            Content="Суммировать">
+                            <Button.Effect>
+                                <ee:RippleTransitionEffect />
+                            </Button.Effect>
+                        </Button>
                         <TextBox
                             x:Name="tb1"
                             Width="59"
@@ -338,12 +333,46 @@
                             x:Name="textBox"
                             Width="120"
                             Height="23"
-                            Margin="507,97,0,0"
+                            Margin="341,10,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             IsEnabled="False"
                             Text="{Binding TextTest2}"
                             TextWrapping="Wrap" />
+                        <Label
+                            x:Name="lblTestCount"
+                            Margin="26,137,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="Label" />
+                        <Image
+                            x:Name="image"
+                            Width="316"
+                            Height="315"
+                            Margin="0,0,10,10"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            IsHitTestVisible="False"
+                            Source="Recources/barometer.jpg" />
+                        <Button
+                            x:Name="btnTest"
+                            Width="123"
+                            Height="6"
+                            Margin="0,0,129,164"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Background="Black"
+                            Content="Button"
+                            RenderTransformOrigin="0.688,0.5">
+                            <Button.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform />
+                                    <SkewTransform />
+                                    <RotateTransform Angle="90" />
+                                    <TranslateTransform />
+                                </TransformGroup>
+                            </Button.RenderTransform>
+                        </Button>
 
                     </Grid>
                 </TabItem>
@@ -384,12 +413,55 @@
                 x:Name="pressBox"
                 Grid.Row="2"
                 Width="46"
-                Height="21"
+                Height="23"
                 Margin="392,2,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 IsEnabled="False"
                 Text="{Binding Press}"
+                TextWrapping="Wrap" />
+            <Label
+                x:Name="lblHum"
+                Grid.Row="2"
+                Height="27"
+                Margin="454,0,242,0"
+                VerticalAlignment="Top"
+                Content="Влажность"
+                FontSize="12"
+                FontWeight="Bold" />
+            <TextBox
+                x:Name="humBox"
+                Grid.Row="2"
+                Width="36"
+                Height="23"
+                Margin="533,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                IsEnabled="False"
+                Text="{Binding Hum}"
+                TextWrapping="Wrap" />
+            <Label
+                x:Name="label5"
+                Grid.Row="2"
+                Width="86"
+                Height="25"
+                Margin="597,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Content="Уровень газа"
+                FontSize="12"
+                FontWeight="Bold"
+                ToolTip="Метан, пропан, бутан, дымовые взвеси" />
+            <TextBox
+                x:Name="gasBox"
+                Grid.Row="2"
+                Width="32"
+                Height="23"
+                Margin="688,2,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                IsEnabled="False"
+                Text="{Binding Gas}"
                 TextWrapping="Wrap" />
             <GroupBox
                 x:Name="groupBox"
@@ -400,10 +472,11 @@
                 Header="Текущие параметры">
                 <Label
                     x:Name="lblTest"
-                    Margin="634,10,0,0"
-                    HorizontalAlignment="Left"
+                    Height="29"
+                    Margin="709,39,-12,-33"
                     VerticalAlignment="Top"
-                    Content="Label" />
+                    AutomationProperties.IsColumnHeader="True"
+                    Content="{Binding q}" />
             </GroupBox>
         </Grid>
     </Grid>
